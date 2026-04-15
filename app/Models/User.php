@@ -8,7 +8,7 @@ class User extends Model
 {
     public $timestamps = false;
 
-    protected $fillable = ['name', 'email', 'password', 'nik'];
+    protected $fillable = ['name', 'email', 'password', 'nik', 'totp_secret'];
 
     protected function casts(): array
     {
