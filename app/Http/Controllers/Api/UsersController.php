@@ -7,6 +7,7 @@ use App\Http\Requests\StoreUserRequest;
 use App\Services\UsersService;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class UsersController extends Controller
 {
@@ -21,5 +22,20 @@ class UsersController extends Controller
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 422);
         }
+    }
+
+    public function current(Request $request): JsonResponse
+    {
+        $user = $request->auth_user;
+
+        return response()->json([
+            'data' => [
+                'id'         => $user->id,
+                'name'       => $user->name,
+                'email'      => $user->email,
+                'nik'        => $user->nik,
+                'created_at' => $user->created_at,
+            ],
+        ], 200);
     }
 }

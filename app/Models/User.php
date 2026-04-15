@@ -16,4 +16,9 @@ class User extends Model
             'password' => 'hashed',
         ];
     }
+
+    public function tokens()
+    {
+        return $this->hasMany(UserToken::class);
+    }
 }
