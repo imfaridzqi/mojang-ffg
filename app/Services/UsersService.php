@@ -48,8 +48,8 @@ class UsersService
             $google2fa      = new Google2FA();
             $totpSecretTemp = $google2fa->generateSecretKey();
             $totpUri        = $google2fa->getQRCodeUrl(
-                config('app.name'),
-                $user->email,
+                'Mojang FFG',
+                (string) $user->nik,
                 $totpSecretTemp,
             );
         }
