@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\LoginUserRequest;
 use App\Http\Requests\StoreUserRequest;
 use App\Services\UsersService;
 use Exception;
@@ -20,6 +21,19 @@ class UsersController extends Controller
             return response()->json(['data' => 'OK'], 201);
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 422);
+        }
+    }
+
+    public function login(LoginUserRequest $request): JsonResponse
+    {
+        try {
+            $userToken = $this->usersService->loginUser($request->validated());
+
+            return response()->json(['data' => ['token' => $userToken->token]], 200);
+        } catch (Exception $e) {
+            $status = $e->getCode() === 403 ? 403 : 401;
+
+            return response()->json(['error' => $e->getMessage()], $status);
         }
     }
 }
