@@ -1,0 +1,16 @@
+[build]
+builder = "nixpacks"
+
+[build.nixpacksPlan.phases.setup]
+nixPkgs = ["php84", "php84Packages.composer", "nodejs_22", "nodePackages.npm"]
+
+[build.nixpacksPlan.phases.install]
+cmds = [
+    "composer install --optimize-autoloader --no-dev --no-interaction",
+    "npm install",
+    "npm run build"
+]
+
+[deploy]
+startCommand = "php artisan serve --host=0.0.0.0 --port=$PORT"
+healthcheckPath = "/"
