@@ -1,7 +1,7 @@
 import AuthGuard from '@/Components/AuthGuard';
 import { Head } from '@inertiajs/react';
 import axios from 'axios';
-import { useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import {
     Area,
     AreaChart,
@@ -44,12 +44,13 @@ const recentTransactions = [
 ];
 
 const navItems = [
-    { icon: GridIcon, label: 'Dashboard', active: true },
-    { icon: UsersIcon, label: 'Pengguna', active: false },
-    { icon: ChartIcon, label: 'Analitik', active: false },
-    { icon: BoxIcon, label: 'Produk', active: false },
-    { icon: BellIcon, label: 'Notifikasi', active: false, badge: 3 },
-    { icon: SettingsIcon, label: 'Pengaturan', active: false },
+    { icon: GridIcon, label: 'Dashboard' },
+    { icon: UsersIcon, label: 'Pengguna' },
+    { icon: ChartIcon, label: 'Analitik' },
+    { icon: BoxIcon, label: 'Produk' },
+    { icon: UploadExcelIcon, label: 'Upload Excel' },
+    { icon: BellIcon, label: 'Notifikasi', badge: 3 },
+    { icon: SettingsIcon, label: 'Pengaturan' },
 ];
 
 const stats = [
@@ -90,6 +91,186 @@ function TrendIcon({ className }) {
 function LogoutIcon({ className }) {
     return <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>;
 }
+function UploadExcelIcon({ className }) {
+    return <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M9 17v-2m3 2v-4m3 4v-6M4 6a2 2 0 012-2h4l2 2h6a2 2 0 012 2v10a2 2 0 01-2 2H6a2 2 0 01-2-2V6z" /></svg>;
+}
+function UploadCloudIcon({ className }) {
+    return <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>;
+}
+function XCircleIcon({ className }) {
+    return <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>;
+}
+function CheckCircleIcon({ className }) {
+    return <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>;
+}
+
+function UploadExcelPage() {
+    const [file, setFile] = useState(null);
+    const [dragging, setDragging] = useState(false);
+    const [uploading, setUploading] = useState(false);
+    const [result, setResult] = useState(null);
+    const [errorMsg, setErrorMsg] = useState('');
+    const inputRef = useRef(null);
+
+    const validateAndSet = useCallback((f) => {
+        setResult(null);
+        setErrorMsg('');
+        if (!f) return;
+        if (!f.name.match(/\.(xlsx|xls)$/i)) {
+            setErrorMsg('File harus berformat .xlsx atau .xls');
+            return;
+        }
+        if (f.size > 10 * 1024 * 1024) {
+            setErrorMsg('Ukuran file maksimal 10 MB');
+            return;
+        }
+        setFile(f);
+    }, []);
+
+    const onDrop = useCallback((e) => {
+        e.preventDefault();
+        setDragging(false);
+        const f = e.dataTransfer.files?.[0];
+        if (f) validateAndSet(f);
+    }, [validateAndSet]);
+
+    const onDragOver = (e) => { e.preventDefault(); setDragging(true); };
+    const onDragLeave = () => setDragging(false);
+
+    const onInputChange = (e) => {
+        const f = e.target.files?.[0];
+        if (f) validateAndSet(f);
+        e.target.value = '';
+    };
+
+    const removeFile = () => { setFile(null); setResult(null); setErrorMsg(''); };
+
+    const handleUpload = async () => {
+        if (!file) return;
+        setUploading(true);
+        setResult(null);
+        const formData = new FormData();
+        formData.append('file', file);
+        const token = localStorage.getItem('auth_token');
+        try {
+            await axios.post('/api/upload-excel', formData, {
+                headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' },
+            });
+            setResult('success');
+            setFile(null);
+        } catch (err) {
+            setResult('error');
+            setErrorMsg(err.response?.data?.error || 'Upload gagal. Coba lagi.');
+        } finally {
+            setUploading(false);
+        }
+    };
+
+    const formatSize = (bytes) => {
+        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+        return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    };
+
+    return (
+        <div className="max-w-xl mx-auto">
+            <div className="mb-6">
+                <h2 className="text-lg font-semibold">Upload Excel</h2>
+                <p className="text-sm text-white/30 mt-0.5">Upload file .xlsx atau .xls, maksimal 10 MB</p>
+            </div>
+
+            <div className="bg-white/5 border border-white/5 rounded-2xl p-6 flex flex-col gap-5">
+                {/* Drop zone */}
+                <div
+                    onDrop={onDrop}
+                    onDragOver={onDragOver}
+                    onDragLeave={onDragLeave}
+                    onClick={() => !file && inputRef.current?.click()}
+                    className={`relative flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed transition-all py-12 px-6
+                        ${file
+                            ? 'border-white/10 cursor-default'
+                            : dragging
+                                ? 'border-indigo-500/70 bg-indigo-500/10 cursor-copy'
+                                : 'border-white/15 hover:border-indigo-500/50 hover:bg-white/3 cursor-pointer'
+                        }`}
+                >
+                    <input ref={inputRef} type="file" accept=".xlsx,.xls" className="hidden" onChange={onInputChange} />
+
+                    {file ? (
+                        <div className="flex items-center gap-4 w-full">
+                            <div className="w-12 h-12 rounded-xl bg-emerald-500/15 flex items-center justify-center shrink-0">
+                                <UploadExcelIcon className="w-6 h-6 text-emerald-400" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium truncate">{file.name}</p>
+                                <p className="text-xs text-white/30 mt-0.5">{formatSize(file.size)}</p>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={(e) => { e.stopPropagation(); removeFile(); }}
+                                className="text-white/30 hover:text-red-400 transition-colors shrink-0"
+                            >
+                                <XCircleIcon className="w-5 h-5" />
+                            </button>
+                        </div>
+                    ) : (
+                        <>
+                            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all ${dragging ? 'bg-indigo-500/20' : 'bg-white/5'}`}>
+                                <UploadCloudIcon className={`w-7 h-7 transition-colors ${dragging ? 'text-indigo-400' : 'text-white/30'}`} />
+                            </div>
+                            <div className="text-center">
+                                <p className="text-sm font-medium text-white/70">
+                                    {dragging ? 'Lepaskan file di sini' : 'Drag & drop file di sini'}
+                                </p>
+                                <p className="text-xs text-white/30 mt-1">
+                                    atau <span className="text-indigo-400 font-medium">klik untuk memilih file</span>
+                                </p>
+                            </div>
+                            <p className="text-[11px] text-white/20">Mendukung .xlsx dan .xls • Maks. 10 MB</p>
+                        </>
+                    )}
+                </div>
+
+                {/* Error */}
+                {errorMsg && (
+                    <div className="flex items-center gap-2 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3">
+                        <XCircleIcon className="w-4 h-4 text-red-400 shrink-0" />
+                        <p className="text-xs text-red-400">{errorMsg}</p>
+                    </div>
+                )}
+
+                {/* Success */}
+                {result === 'success' && (
+                    <div className="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 rounded-xl px-4 py-3">
+                        <CheckCircleIcon className="w-4 h-4 text-emerald-400 shrink-0" />
+                        <p className="text-xs text-emerald-400">File berhasil diupload.</p>
+                    </div>
+                )}
+
+                {/* Button */}
+                <button
+                    onClick={handleUpload}
+                    disabled={!file || uploading}
+                    className="w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-xl transition-all duration-200 shadow-lg shadow-indigo-500/20 active:scale-[0.98] text-sm flex items-center justify-center gap-2"
+                >
+                    {uploading ? (
+                        <>
+                            <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                            </svg>
+                            Mengupload...
+                        </>
+                    ) : (
+                        <>
+                            <UploadCloudIcon className="w-4 h-4" />
+                            Upload File
+                        </>
+                    )}
+                </button>
+            </div>
+        </div>
+    );
+}
 
 const colorMap = {
     indigo: 'bg-indigo-500/15 text-indigo-400',
@@ -112,6 +293,7 @@ const fmt = (v) => 'Rp ' + (v / 1000000).toFixed(1) + 'M';
 export default function Dashboard() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [loggingOut, setLoggingOut] = useState(false);
+    const [activePage, setActivePage] = useState('Dashboard');
 
     const handleLogout = async () => {
         setLoggingOut(true);
@@ -145,8 +327,8 @@ export default function Dashboard() {
                     {/* Nav */}
                     <nav className="flex-1 px-3 py-4 flex flex-col gap-0.5 overflow-y-auto">
                         <p className="text-[10px] font-semibold text-white/25 uppercase tracking-widest px-3 mb-2">Menu</p>
-                        {navItems.map(({ icon: Icon, label, active, badge }) => (
-                            <button key={label} className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all relative ${active ? 'bg-indigo-500/15 text-indigo-400' : 'text-white/40 hover:text-white/80 hover:bg-white/5'}`}>
+                        {navItems.map(({ icon: Icon, label, badge }) => (
+                            <button key={label} onClick={() => { setActivePage(label); setSidebarOpen(false); }} className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all relative ${activePage === label ? 'bg-indigo-500/15 text-indigo-400' : 'text-white/40 hover:text-white/80 hover:bg-white/5'}`}>
                                 <Icon className="w-5 h-5 shrink-0" />
                                 {label}
                                 {badge && <span className="ml-auto bg-indigo-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">{badge}</span>}
@@ -189,8 +371,8 @@ export default function Dashboard() {
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
                             </button>
                             <div>
-                                <h1 className="text-base font-semibold">Dashboard</h1>
-                                <p className="text-xs text-white/30">Selasa, 15 April 2026</p>
+                                <h1 className="text-base font-semibold">{activePage}</h1>
+                                <p className="text-xs text-white/30">Rabu, 16 April 2026</p>
                             </div>
                         </div>
                         <div className="flex items-center gap-3">
@@ -212,6 +394,14 @@ export default function Dashboard() {
 
                     {/* Content */}
                     <main className="flex-1 px-6 py-6 space-y-6 overflow-auto">
+                        {activePage === 'Upload Excel' && <UploadExcelPage />}
+                        {activePage !== 'Upload Excel' && activePage !== 'Dashboard' && (
+                            <div className="flex flex-col items-center justify-center h-64 text-white/20">
+                                <p className="text-lg font-medium">{activePage}</p>
+                                <p className="text-sm mt-1">Halaman belum tersedia</p>
+                            </div>
+                        )}
+                        {activePage === 'Dashboard' && <>
 
                         {/* Stats Cards */}
                         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -320,6 +510,8 @@ export default function Dashboard() {
                                 </table>
                             </div>
                         </div>
+
+                        </>}
 
                     </main>
                 </div>
