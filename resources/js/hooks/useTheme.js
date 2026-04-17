@@ -1,0 +1,20 @@
+import { useEffect, useState } from 'react';
+
+export function useTheme() {
+    const [dark, setDark] = useState(() => {
+        const stored = localStorage.getItem('theme');
+        return stored ? stored === 'dark' : true;
+    });
+
+    useEffect(() => {
+        const html = document.documentElement;
+        if (dark) {
+            html.classList.add('dark');
+        } else {
+            html.classList.remove('dark');
+        }
+        localStorage.setItem('theme', dark ? 'dark' : 'light');
+    }, [dark]);
+
+    return { dark, toggle: () => setDark(d => !d) };
+}

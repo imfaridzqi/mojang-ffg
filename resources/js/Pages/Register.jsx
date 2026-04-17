@@ -1,6 +1,7 @@
 import { Head } from '@inertiajs/react';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
+import ThemeToggle from '@/Components/ThemeToggle';
 
 function EyeIcon({ open }) {
     return open ? (
@@ -58,16 +59,24 @@ export default function Register() {
     const passwordsMatch = confirmPassword && form.password === confirmPassword;
     const passwordsMismatch = confirmPassword && form.password !== confirmPassword;
 
+    const inputClass = "w-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/20 outline-none focus:border-indigo-500/70 transition-all";
+    const eyeBtnClass = "absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-white/30 hover:text-gray-700 dark:hover:text-white/70 transition-colors";
+    const labelClass = "text-xs font-medium text-gray-500 dark:text-white/50 uppercase tracking-widest";
+
     return (
         <>
             <Head title="Registrasi" />
 
-            <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center p-4 relative overflow-hidden">
-                <div className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] rounded-full bg-indigo-600/20 blur-[120px] pointer-events-none" />
-                <div className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] rounded-full bg-violet-600/20 blur-[120px] pointer-events-none" />
+            <div className="min-h-screen bg-slate-100 dark:bg-[#0a0a0f] flex items-center justify-center p-4 relative overflow-hidden transition-colors duration-300">
+                <div className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] rounded-full bg-indigo-600/10 dark:bg-indigo-600/20 blur-[120px] pointer-events-none" />
+                <div className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] rounded-full bg-violet-600/10 dark:bg-violet-600/20 blur-[120px] pointer-events-none" />
+
+                <div className="absolute top-4 right-4 z-20">
+                    <ThemeToggle />
+                </div>
 
                 <div className="relative z-10 w-full max-w-sm">
-                    <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8 shadow-2xl">
+                    <div className="bg-white dark:bg-white/5 backdrop-blur-xl border border-gray-200 dark:border-white/10 rounded-2xl p-8 shadow-xl dark:shadow-none">
 
                         <div className="flex flex-col items-center mb-8">
                             <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center mb-4 shadow-lg shadow-indigo-500/30">
@@ -75,82 +84,39 @@ export default function Register() {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
                                 </svg>
                             </div>
-                            <h1 className="text-xl font-semibold text-white tracking-tight">Buat Akun Baru</h1>
-                            <span className="text-lg font-bold bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent tracking-wide">MOJANG FFG</span>
-                            <p className="text-sm text-white/40 mt-2">Daftarkan akun Anda</p>
+                            <h1 className="text-xl font-semibold text-gray-900 dark:text-white tracking-tight">Buat Akun Baru</h1>
+                            <span className="text-lg font-bold bg-gradient-to-r from-indigo-500 to-violet-500 bg-clip-text text-transparent tracking-wide">MOJANG FFG</span>
+                            <p className="text-sm text-gray-400 dark:text-white/40 mt-2">Daftarkan akun Anda</p>
                         </div>
 
                         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-                            {/* Nama Lengkap */}
                             <div className="flex flex-col gap-1.5">
-                                <label className="text-xs font-medium text-white/50 uppercase tracking-widest">Nama Lengkap</label>
-                                <input
-                                    type="text"
-                                    name="name"
-                                    value={form.name}
-                                    onChange={handleChange}
-                                    placeholder="Nama lengkap Anda"
-                                    required
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-white/20 outline-none focus:border-indigo-500/60 focus:bg-white/8 transition-all"
-                                />
+                                <label className={labelClass}>Nama Lengkap</label>
+                                <input type="text" name="name" value={form.name} onChange={handleChange} placeholder="Nama lengkap Anda" required className={inputClass} />
                             </div>
 
-                            {/* Email */}
                             <div className="flex flex-col gap-1.5">
-                                <label className="text-xs font-medium text-white/50 uppercase tracking-widest">Email</label>
-                                <input
-                                    type="email"
-                                    name="email"
-                                    value={form.email}
-                                    onChange={handleChange}
-                                    placeholder="nama@email.com"
-                                    required
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-white/20 outline-none focus:border-indigo-500/60 focus:bg-white/8 transition-all"
-                                />
+                                <label className={labelClass}>Email</label>
+                                <input type="email" name="email" value={form.email} onChange={handleChange} placeholder="nama@email.com" required className={inputClass} />
                             </div>
 
-                            {/* NIK */}
                             <div className="flex flex-col gap-1.5">
-                                <label className="text-xs font-medium text-white/50 uppercase tracking-widest">NIK</label>
-                                <input
-                                    type="text"
-                                    name="nik"
-                                    value={form.nik}
-                                    onChange={handleChange}
-                                    placeholder="NIK"
-                                    inputMode="numeric"
-                                    required
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-white/20 outline-none focus:border-indigo-500/60 focus:bg-white/8 transition-all"
-                                />
+                                <label className={labelClass}>NIK</label>
+                                <input type="text" name="nik" value={form.nik} onChange={handleChange} placeholder="NIK" inputMode="numeric" required className={inputClass} />
                             </div>
 
-                            {/* Password */}
                             <div className="flex flex-col gap-1.5">
-                                <label className="text-xs font-medium text-white/50 uppercase tracking-widest">Password</label>
+                                <label className={labelClass}>Password</label>
                                 <div className="relative">
-                                    <input
-                                        type={showPassword ? 'text' : 'password'}
-                                        name="password"
-                                        value={form.password}
-                                        onChange={handleChange}
-                                        placeholder="Minimal 8 karakter"
-                                        required
-                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 pr-11 text-sm text-white placeholder-white/20 outline-none focus:border-indigo-500/60 focus:bg-white/8 transition-all"
-                                    />
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowPassword(v => !v)}
-                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/70 transition-colors"
-                                        tabIndex={-1}
-                                    >
+                                    <input type={showPassword ? 'text' : 'password'} name="password" value={form.password} onChange={handleChange} placeholder="Minimal 8 karakter" required className={inputClass + ' pr-11'} />
+                                    <button type="button" onClick={() => setShowPassword(v => !v)} className={eyeBtnClass} tabIndex={-1}>
                                         <EyeIcon open={showPassword} />
                                     </button>
                                 </div>
                             </div>
 
-                            {/* Konfirmasi Password */}
                             <div className="flex flex-col gap-1.5">
-                                <label className="text-xs font-medium text-white/50 uppercase tracking-widest">Konfirmasi Password</label>
+                                <label className={labelClass}>Konfirmasi Password</label>
                                 <div className="relative">
                                     <input
                                         type={showConfirm ? 'text' : 'password'}
@@ -158,32 +124,22 @@ export default function Register() {
                                         onChange={(e) => { setConfirmPassword(e.target.value); setError(''); }}
                                         placeholder="Ulangi password Anda"
                                         required
-                                        className={`w-full bg-white/5 border rounded-xl px-4 py-3 pr-11 text-sm text-white placeholder-white/20 outline-none transition-all ${
+                                        className={`w-full bg-white dark:bg-white/5 border rounded-xl px-4 py-3 pr-11 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/20 outline-none transition-all ${
                                             passwordsMismatch
-                                                ? 'border-red-500/50 focus:border-red-500/70'
+                                                ? 'border-red-400 dark:border-red-500/50'
                                                 : passwordsMatch
-                                                ? 'border-emerald-500/50 focus:border-emerald-500/70'
-                                                : 'border-white/10 focus:border-indigo-500/60 focus:bg-white/8'
+                                                ? 'border-emerald-400 dark:border-emerald-500/50'
+                                                : 'border-gray-200 dark:border-white/10 focus:border-indigo-500/70'
                                         }`}
                                     />
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowConfirm(v => !v)}
-                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/70 transition-colors"
-                                        tabIndex={-1}
-                                    >
+                                    <button type="button" onClick={() => setShowConfirm(v => !v)} className={eyeBtnClass} tabIndex={-1}>
                                         <EyeIcon open={showConfirm} />
                                     </button>
                                 </div>
-                                {passwordsMismatch && (
-                                    <p className="text-xs text-red-400">Password tidak cocok.</p>
-                                )}
-                                {passwordsMatch && (
-                                    <p className="text-xs text-emerald-400">Password cocok.</p>
-                                )}
+                                {passwordsMismatch && <p className="text-xs text-red-400">Password tidak cocok.</p>}
+                                {passwordsMatch && <p className="text-xs text-emerald-500 dark:text-emerald-400">Password cocok.</p>}
                             </div>
 
-                            {/* Error */}
                             {error && (
                                 <div className="flex items-center gap-2 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3">
                                     <svg className="w-4 h-4 text-red-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -196,7 +152,7 @@ export default function Register() {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="mt-1 w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-xl transition-all duration-200 shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 active:scale-[0.98] text-sm"
+                                className="mt-1 w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-xl transition-all duration-200 shadow-lg shadow-indigo-500/25 active:scale-[0.98] text-sm"
                             >
                                 {loading ? (
                                     <span className="flex items-center justify-center gap-2">
@@ -209,16 +165,16 @@ export default function Register() {
                                 ) : 'Daftar Sekarang'}
                             </button>
 
-                            <p className="text-center text-white/30 text-xs mt-1">
+                            <p className="text-center text-gray-400 dark:text-white/30 text-xs mt-1">
                                 Sudah punya akun?{' '}
-                                <a href="/login" className="text-indigo-400 hover:text-indigo-300 transition-colors font-medium">
+                                <a href="/login" className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors font-medium">
                                     Masuk
                                 </a>
                             </p>
                         </form>
                     </div>
 
-                    <p className="text-center text-white/20 text-xs mt-6">
+                    <p className="text-center text-gray-400 dark:text-white/20 text-xs mt-6">
                         Protected with Google Authenticator 2FA
                     </p>
                 </div>

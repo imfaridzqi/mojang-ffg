@@ -1,4 +1,6 @@
 import AuthGuard from '@/Components/AuthGuard';
+import ThemeToggle from '@/Components/ThemeToggle';
+import { useTheme } from '@/hooks/useTheme';
 import { Head } from '@inertiajs/react';
 import axios from 'axios';
 import { useCallback, useRef, useState } from 'react';
@@ -291,9 +293,16 @@ const fmt = (v) => 'Rp ' + (v / 1000000).toFixed(1) + 'M';
 
 // ── Component ─────────────────────────────────────────────────────
 export default function Dashboard() {
+    const { dark } = useTheme();
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [loggingOut, setLoggingOut] = useState(false);
     const [activePage, setActivePage] = useState('Dashboard');
+
+    const chartGrid   = dark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.06)';
+    const chartTick   = dark ? 'rgba(255,255,255,0.3)'  : 'rgba(0,0,0,0.4)';
+    const chartTip    = dark
+        ? { background: '#1a1a2e', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: '#fff' }
+        : { background: '#fff',    border: '1px solid rgba(0,0,0,0.08)',       borderRadius: '12px', color: '#111' };
 
     const handleLogout = async () => {
         setLoggingOut(true);
@@ -307,28 +316,32 @@ export default function Dashboard() {
             {(user) => (
         <>
             <Head title="Dashboard — MOJANG FFG" />
-            <div className="min-h-screen bg-[#0d0d14] flex text-white">
+            <div className="min-h-screen bg-gray-50 dark:bg-[#0d0d14] flex text-gray-900 dark:text-white transition-colors duration-300">
 
                 {/* ── Sidebar ── */}
-                <aside className={`fixed inset-y-0 left-0 z-40 w-60 bg-[#0a0a0f] border-r border-white/5 flex flex-col transition-transform duration-300 lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+                <aside className={`fixed inset-y-0 left-0 z-40 w-60 bg-white dark:bg-[#0a0a0f] border-r border-gray-200 dark:border-white/5 flex flex-col transition-transform duration-300 lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
                     {/* Brand */}
-                    <div className="flex items-center gap-3 px-6 py-5 border-b border-white/5">
+                    <div className="flex items-center gap-3 px-6 py-5 border-b border-gray-200 dark:border-white/5">
                         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shrink-0">
                             <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                             </svg>
                         </div>
                         <div>
-                            <p className="text-sm font-bold tracking-wide">MOJANG FFG</p>
-                            <p className="text-[10px] text-white/30">Admin Panel</p>
+                            <p className="text-sm font-bold tracking-wide text-gray-900 dark:text-white">MOJANG FFG</p>
+                            <p className="text-[10px] text-gray-400 dark:text-white/30">Admin Panel</p>
                         </div>
                     </div>
 
                     {/* Nav */}
                     <nav className="flex-1 px-3 py-4 flex flex-col gap-0.5 overflow-y-auto">
-                        <p className="text-[10px] font-semibold text-white/25 uppercase tracking-widest px-3 mb-2">Menu</p>
+                        <p className="text-[10px] font-semibold text-gray-400 dark:text-white/25 uppercase tracking-widest px-3 mb-2">Menu</p>
                         {navItems.map(({ icon: Icon, label, badge }) => (
-                            <button key={label} onClick={() => { setActivePage(label); setSidebarOpen(false); }} className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all relative ${activePage === label ? 'bg-indigo-500/15 text-indigo-400' : 'text-white/40 hover:text-white/80 hover:bg-white/5'}`}>
+                            <button key={label} onClick={() => { setActivePage(label); setSidebarOpen(false); }}
+                                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all relative
+                                    ${activePage === label
+                                        ? 'bg-indigo-50 dark:bg-indigo-500/15 text-indigo-600 dark:text-indigo-400'
+                                        : 'text-gray-400 dark:text-white/40 hover:text-gray-700 dark:hover:text-white/80 hover:bg-gray-100 dark:hover:bg-white/5'}`}>
                                 <Icon className="w-5 h-5 shrink-0" />
                                 {label}
                                 {badge && <span className="ml-auto bg-indigo-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">{badge}</span>}
@@ -337,20 +350,20 @@ export default function Dashboard() {
                     </nav>
 
                     {/* User */}
-                    <div className="px-3 pb-4 border-t border-white/5 pt-3">
-                        <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-white/5">
-                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-xs font-bold shrink-0">
+                    <div className="px-3 pb-4 border-t border-gray-200 dark:border-white/5 pt-3">
+                        <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-gray-100 dark:bg-white/5">
+                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-xs font-bold text-white shrink-0">
                                 {user.name?.charAt(0).toUpperCase()}
                             </div>
                             <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium truncate">{user.name}</p>
-                                <p className="text-[10px] text-white/30 truncate">{user.email}</p>
+                                <p className="text-sm font-medium truncate text-gray-900 dark:text-white">{user.name}</p>
+                                <p className="text-[10px] text-gray-400 dark:text-white/30 truncate">{user.email}</p>
                             </div>
                         </div>
                         <button
                             onClick={handleLogout}
                             disabled={loggingOut}
-                            className="mt-2 w-full flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-white/40 hover:text-red-400 hover:bg-red-500/10 transition-all disabled:opacity-50"
+                            className="mt-2 w-full flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-gray-400 dark:text-white/40 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all disabled:opacity-50"
                         >
                             <LogoutIcon className="w-4 h-4" />
                             {loggingOut ? 'Keluar...' : 'Keluar'}
@@ -365,28 +378,29 @@ export default function Dashboard() {
                 <div className="flex-1 flex flex-col lg:ml-60 min-w-0">
 
                     {/* Navbar */}
-                    <header className="sticky top-0 z-20 flex items-center justify-between px-6 py-4 bg-[#0d0d14]/80 backdrop-blur-xl border-b border-white/5">
+                    <header className="sticky top-0 z-20 flex items-center justify-between px-6 py-4 bg-white/80 dark:bg-[#0d0d14]/80 backdrop-blur-xl border-b border-gray-200 dark:border-white/5">
                         <div className="flex items-center gap-4">
-                            <button onClick={() => setSidebarOpen(!sidebarOpen)} className="lg:hidden text-white/40 hover:text-white transition-colors">
+                            <button onClick={() => setSidebarOpen(!sidebarOpen)} className="lg:hidden text-gray-400 dark:text-white/40 hover:text-gray-700 dark:hover:text-white transition-colors">
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
                             </button>
                             <div>
-                                <h1 className="text-base font-semibold">{activePage}</h1>
-                                <p className="text-xs text-white/30">Rabu, 16 April 2026</p>
+                                <h1 className="text-base font-semibold text-gray-900 dark:text-white">{activePage}</h1>
+                                <p className="text-xs text-gray-400 dark:text-white/30">Rabu, 16 April 2026</p>
                             </div>
                         </div>
-                        <div className="flex items-center gap-3">
-                            <button className="relative w-9 h-9 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center transition-all">
-                                <BellIcon className="w-4 h-4 text-white/60" />
+                        <div className="flex items-center gap-2">
+                            <ThemeToggle />
+                            <button className="relative w-9 h-9 rounded-xl bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 flex items-center justify-center transition-all">
+                                <BellIcon className="w-4 h-4 text-gray-500 dark:text-white/60" />
                                 <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-indigo-500 rounded-full" />
                             </button>
-                            <div className="flex items-center gap-2 pl-3 border-l border-white/10">
-                                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-xs font-bold">
+                            <div className="flex items-center gap-2 pl-2 border-l border-gray-200 dark:border-white/10 ml-1">
+                                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-xs font-bold text-white">
                                     {user.name?.charAt(0).toUpperCase()}
                                 </div>
                                 <div className="hidden sm:block">
-                                    <p className="text-sm font-medium leading-none">{user.name}</p>
-                                    <p className="text-[11px] text-white/30 mt-0.5">Administrator</p>
+                                    <p className="text-sm font-medium leading-none text-gray-900 dark:text-white">{user.name}</p>
+                                    <p className="text-[11px] text-gray-400 dark:text-white/30 mt-0.5">Administrator</p>
                                 </div>
                             </div>
                         </div>
@@ -396,7 +410,7 @@ export default function Dashboard() {
                     <main className="flex-1 px-6 py-6 space-y-6 overflow-auto">
                         {activePage === 'Upload Excel' && <UploadExcelPage />}
                         {activePage !== 'Upload Excel' && activePage !== 'Dashboard' && (
-                            <div className="flex flex-col items-center justify-center h-64 text-white/20">
+                            <div className="flex flex-col items-center justify-center h-64 text-gray-300 dark:text-white/20">
                                 <p className="text-lg font-medium">{activePage}</p>
                                 <p className="text-sm mt-1">Halaman belum tersedia</p>
                             </div>
@@ -406,17 +420,17 @@ export default function Dashboard() {
                         {/* Stats Cards */}
                         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                             {stats.map(({ label, value, change, up, icon: Icon, color }) => (
-                                <div key={label} className="bg-white/5 border border-white/5 rounded-2xl p-5 flex flex-col gap-3 hover:bg-white/8 transition-all">
+                                <div key={label} className="bg-white dark:bg-white/5 border border-gray-100 dark:border-white/5 rounded-2xl p-5 flex flex-col gap-3 shadow-sm hover:shadow-md dark:shadow-none dark:hover:bg-white/8 transition-all">
                                     <div className="flex items-center justify-between">
-                                        <p className="text-xs text-white/40 font-medium">{label}</p>
+                                        <p className="text-xs text-gray-500 dark:text-white/40 font-medium">{label}</p>
                                         <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${colorMap[color]}`}>
                                             <Icon className="w-4 h-4" />
                                         </div>
                                     </div>
                                     <div>
-                                        <p className="text-2xl font-bold tracking-tight">{value}</p>
-                                        <p className={`text-xs mt-1 font-medium ${up ? 'text-emerald-400' : 'text-red-400'}`}>
-                                            {change} <span className="text-white/25 font-normal">vs bulan lalu</span>
+                                        <p className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{value}</p>
+                                        <p className={`text-xs mt-1 font-medium ${up ? 'text-emerald-500 dark:text-emerald-400' : 'text-red-500 dark:text-red-400'}`}>
+                                            {change} <span className="text-gray-400 dark:text-white/25 font-normal">vs bulan lalu</span>
                                         </p>
                                     </div>
                                 </div>
@@ -426,13 +440,13 @@ export default function Dashboard() {
                         {/* Charts */}
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                             {/* Area Chart */}
-                            <div className="lg:col-span-2 bg-white/5 border border-white/5 rounded-2xl p-5">
+                            <div className="lg:col-span-2 bg-white dark:bg-white/5 border border-gray-100 dark:border-white/5 rounded-2xl p-5 shadow-sm dark:shadow-none">
                                 <div className="flex items-center justify-between mb-5">
                                     <div>
-                                        <p className="text-sm font-semibold">Pendapatan Bulanan</p>
-                                        <p className="text-xs text-white/30 mt-0.5">Jan — Agu 2026</p>
+                                        <p className="text-sm font-semibold text-gray-900 dark:text-white">Pendapatan Bulanan</p>
+                                        <p className="text-xs text-gray-400 dark:text-white/30 mt-0.5">Jan — Agu 2026</p>
                                     </div>
-                                    <span className="text-xs bg-emerald-500/15 text-emerald-400 px-2.5 py-1 rounded-full font-medium">+14.5%</span>
+                                    <span className="text-xs bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 px-2.5 py-1 rounded-full font-medium">+14.5%</span>
                                 </div>
                                 <ResponsiveContainer width="100%" height={200}>
                                     <AreaChart data={revenueData}>
@@ -442,10 +456,10 @@ export default function Dashboard() {
                                                 <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
                                             </linearGradient>
                                         </defs>
-                                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                                        <XAxis dataKey="month" tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 11 }} axisLine={false} tickLine={false} />
-                                        <YAxis tickFormatter={(v) => `${v / 1000000}M`} tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 11 }} axisLine={false} tickLine={false} />
-                                        <Tooltip formatter={(v) => fmt(v)} contentStyle={{ background: '#1a1a2e', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: '#fff' }} />
+                                        <CartesianGrid strokeDasharray="3 3" stroke={chartGrid} />
+                                        <XAxis dataKey="month" tick={{ fill: chartTick, fontSize: 11 }} axisLine={false} tickLine={false} />
+                                        <YAxis tickFormatter={(v) => `${v / 1000000}M`} tick={{ fill: chartTick, fontSize: 11 }} axisLine={false} tickLine={false} />
+                                        <Tooltip formatter={(v) => fmt(v)} contentStyle={chartTip} />
                                         <Area type="monotone" dataKey="revenue" stroke="#6366f1" strokeWidth={2} fill="url(#revGrad)" name="Aktual" />
                                         <Area type="monotone" dataKey="target" stroke="rgba(139,92,246,0.5)" strokeWidth={1.5} strokeDasharray="4 4" fill="none" name="Target" />
                                     </AreaChart>
@@ -453,17 +467,17 @@ export default function Dashboard() {
                             </div>
 
                             {/* Bar Chart */}
-                            <div className="bg-white/5 border border-white/5 rounded-2xl p-5">
+                            <div className="bg-white dark:bg-white/5 border border-gray-100 dark:border-white/5 rounded-2xl p-5 shadow-sm dark:shadow-none">
                                 <div className="mb-5">
-                                    <p className="text-sm font-semibold">Pertumbuhan User</p>
-                                    <p className="text-xs text-white/30 mt-0.5">6 minggu terakhir</p>
+                                    <p className="text-sm font-semibold text-gray-900 dark:text-white">Pertumbuhan User</p>
+                                    <p className="text-xs text-gray-400 dark:text-white/30 mt-0.5">6 minggu terakhir</p>
                                 </div>
                                 <ResponsiveContainer width="100%" height={200}>
                                     <BarChart data={userGrowthData} barSize={8}>
-                                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
-                                        <XAxis dataKey="week" tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 11 }} axisLine={false} tickLine={false} />
-                                        <YAxis tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 11 }} axisLine={false} tickLine={false} />
-                                        <Tooltip contentStyle={{ background: '#1a1a2e', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: '#fff' }} />
+                                        <CartesianGrid strokeDasharray="3 3" stroke={chartGrid} vertical={false} />
+                                        <XAxis dataKey="week" tick={{ fill: chartTick, fontSize: 11 }} axisLine={false} tickLine={false} />
+                                        <YAxis tick={{ fill: chartTick, fontSize: 11 }} axisLine={false} tickLine={false} />
+                                        <Tooltip contentStyle={chartTip} />
                                         <Bar dataKey="new" fill="#6366f1" radius={[4, 4, 0, 0]} name="User Baru" />
                                         <Bar dataKey="active" fill="rgba(139,92,246,0.4)" radius={[4, 4, 0, 0]} name="User Aktif" />
                                     </BarChart>
@@ -472,38 +486,38 @@ export default function Dashboard() {
                         </div>
 
                         {/* Table */}
-                        <div className="bg-white/5 border border-white/5 rounded-2xl overflow-hidden">
-                            <div className="flex items-center justify-between px-5 py-4 border-b border-white/5">
+                        <div className="bg-white dark:bg-white/5 border border-gray-100 dark:border-white/5 rounded-2xl overflow-hidden shadow-sm dark:shadow-none">
+                            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-white/5">
                                 <div>
-                                    <p className="text-sm font-semibold">Transaksi Terbaru</p>
-                                    <p className="text-xs text-white/30 mt-0.5">5 transaksi terakhir</p>
+                                    <p className="text-sm font-semibold text-gray-900 dark:text-white">Transaksi Terbaru</p>
+                                    <p className="text-xs text-gray-400 dark:text-white/30 mt-0.5">5 transaksi terakhir</p>
                                 </div>
-                                <button className="text-xs text-indigo-400 hover:text-indigo-300 font-medium transition-colors">Lihat semua →</button>
+                                <button className="text-xs text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 font-medium transition-colors">Lihat semua →</button>
                             </div>
                             <div className="overflow-x-auto">
                                 <table className="w-full text-sm">
                                     <thead>
-                                        <tr className="border-b border-white/5">
+                                        <tr className="border-b border-gray-100 dark:border-white/5">
                                             {['ID Transaksi', 'Pengguna', 'Jumlah', 'Status', 'Tanggal'].map(h => (
-                                                <th key={h} className="text-left px-5 py-3 text-xs font-medium text-white/30 uppercase tracking-wider">{h}</th>
+                                                <th key={h} className="text-left px-5 py-3 text-xs font-medium text-gray-400 dark:text-white/30 uppercase tracking-wider">{h}</th>
                                             ))}
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {recentTransactions.map((tx, i) => (
-                                            <tr key={tx.id} className={`border-b border-white/5 hover:bg-white/3 transition-colors ${i === recentTransactions.length - 1 ? 'border-0' : ''}`}>
-                                                <td className="px-5 py-3.5 text-white/50 font-mono text-xs">{tx.id}</td>
+                                            <tr key={tx.id} className={`border-b border-gray-100 dark:border-white/5 hover:bg-gray-50 dark:hover:bg-white/3 transition-colors ${i === recentTransactions.length - 1 ? 'border-0' : ''}`}>
+                                                <td className="px-5 py-3.5 text-gray-400 dark:text-white/50 font-mono text-xs">{tx.id}</td>
                                                 <td className="px-5 py-3.5">
                                                     <div className="flex items-center gap-2.5">
-                                                        <div className="w-7 h-7 rounded-full bg-gradient-to-br from-indigo-500/50 to-violet-600/50 flex items-center justify-center text-[10px] font-bold shrink-0">{tx.avatar}</div>
-                                                        <span className="font-medium">{tx.user}</span>
+                                                        <div className="w-7 h-7 rounded-full bg-gradient-to-br from-indigo-500/50 to-violet-600/50 flex items-center justify-center text-[10px] font-bold text-white shrink-0">{tx.avatar}</div>
+                                                        <span className="font-medium text-gray-900 dark:text-white">{tx.user}</span>
                                                     </div>
                                                 </td>
-                                                <td className="px-5 py-3.5 font-semibold">Rp {tx.amount.toLocaleString('id-ID')}</td>
+                                                <td className="px-5 py-3.5 font-semibold text-gray-900 dark:text-white">Rp {tx.amount.toLocaleString('id-ID')}</td>
                                                 <td className="px-5 py-3.5">
                                                     <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${statusMap[tx.status]}`}>{statusLabel[tx.status]}</span>
                                                 </td>
-                                                <td className="px-5 py-3.5 text-white/40 text-xs">{tx.date}</td>
+                                                <td className="px-5 py-3.5 text-gray-400 dark:text-white/40 text-xs">{tx.date}</td>
                                             </tr>
                                         ))}
                                     </tbody>

@@ -1,6 +1,7 @@
 import { Head } from '@inertiajs/react';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
+import ThemeToggle from '@/Components/ThemeToggle';
 
 export default function Login() {
     const [form, setForm] = useState({ login: '', password: '' });
@@ -43,23 +44,27 @@ export default function Login() {
         <>
             <Head title="Login" />
 
-            <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center p-4 relative overflow-hidden">
-                <div className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] rounded-full bg-indigo-600/20 blur-[120px] pointer-events-none" />
-                <div className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] rounded-full bg-violet-600/20 blur-[120px] pointer-events-none" />
+            <div className="min-h-screen bg-slate-100 dark:bg-[#0a0a0f] flex items-center justify-center p-4 relative overflow-hidden transition-colors duration-300">
+                <div className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] rounded-full bg-indigo-600/10 dark:bg-indigo-600/20 blur-[120px] pointer-events-none" />
+                <div className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] rounded-full bg-violet-600/10 dark:bg-violet-600/20 blur-[120px] pointer-events-none" />
+
+                <div className="absolute top-4 right-4 z-20">
+                    <ThemeToggle />
+                </div>
 
                 <div className="relative z-10 w-full max-w-sm">
-                    <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8 shadow-2xl">
+                    <div className="bg-white dark:bg-white/5 backdrop-blur-xl border border-gray-200 dark:border-white/10 rounded-2xl p-8 shadow-xl dark:shadow-none">
 
                         <div className="flex flex-col items-center mb-8">
                             <img src="/logo.png" alt="Mojang FFG" className="w-24 h-24 rounded-2xl mb-4 shadow-lg shadow-indigo-500/20 object-contain" />
-                            <p className="text-sm text-white/50 tracking-wide">Selamat datang di</p>
-                            <span className="text-3xl font-extrabold bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent tracking-wide mt-1">MOJANG FFG</span>
-                            <p className="text-sm text-white/40 mt-2">Masuk ke akun Anda</p>
+                            <p className="text-sm text-gray-500 dark:text-white/50 tracking-wide">Selamat datang di</p>
+                            <span className="text-3xl font-extrabold bg-gradient-to-r from-indigo-500 to-violet-500 bg-clip-text text-transparent tracking-wide mt-1">MOJANG FFG</span>
+                            <p className="text-sm text-gray-400 dark:text-white/40 mt-2">Masuk ke akun Anda</p>
                         </div>
 
                         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                             <div className="flex flex-col gap-1.5">
-                                <label className="text-xs font-medium text-white/50 uppercase tracking-widest">Email / NIK</label>
+                                <label className="text-xs font-medium text-gray-500 dark:text-white/50 uppercase tracking-widest">Email / NIK</label>
                                 <input
                                     type="text"
                                     name="login"
@@ -67,12 +72,12 @@ export default function Login() {
                                     onChange={handleChange}
                                     placeholder="nama@email.com atau NIK"
                                     required
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-white/20 outline-none focus:border-indigo-500/60 focus:bg-white/8 transition-all"
+                                    className="w-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/20 outline-none focus:border-indigo-500/70 transition-all"
                                 />
                             </div>
 
                             <div className="flex flex-col gap-1.5">
-                                <label className="text-xs font-medium text-white/50 uppercase tracking-widest">Password</label>
+                                <label className="text-xs font-medium text-gray-500 dark:text-white/50 uppercase tracking-widest">Password</label>
                                 <div className="relative">
                                     <input
                                         type={showPassword ? 'text' : 'password'}
@@ -81,12 +86,12 @@ export default function Login() {
                                         onChange={handleChange}
                                         placeholder="••••••••"
                                         required
-                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 pr-11 text-sm text-white placeholder-white/20 outline-none focus:border-indigo-500/60 focus:bg-white/8 transition-all"
+                                        className="w-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 pr-11 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/20 outline-none focus:border-indigo-500/70 transition-all"
                                     />
                                     <button
                                         type="button"
                                         onClick={() => setShowPassword(v => !v)}
-                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/70 transition-colors"
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-white/30 hover:text-gray-700 dark:hover:text-white/70 transition-colors"
                                         tabIndex={-1}
                                     >
                                         {showPassword ? (
@@ -130,7 +135,7 @@ export default function Login() {
                         </form>
                     </div>
 
-                    <p className="text-center text-white/20 text-xs mt-6">
+                    <p className="text-center text-gray-400 dark:text-white/20 text-xs mt-6">
                         Protected with Google Authenticator 2FA
                     </p>
                 </div>
