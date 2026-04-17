@@ -176,11 +176,11 @@ function UploadExcelPage() {
     return (
         <div className="max-w-xl mx-auto">
             <div className="mb-6">
-                <h2 className="text-lg font-semibold">Upload Excel</h2>
-                <p className="text-sm text-white/30 mt-0.5">Upload file .xlsx atau .xls, maksimal 10 MB</p>
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Upload Excel</h2>
+                <p className="text-sm text-gray-400 dark:text-white/30 mt-0.5">Upload file .xlsx atau .xls, maksimal 10 MB</p>
             </div>
 
-            <div className="bg-white/5 border border-white/5 rounded-2xl p-6 flex flex-col gap-5">
+            <div className="bg-white dark:bg-white/5 border border-gray-100 dark:border-white/5 rounded-2xl p-6 flex flex-col gap-5 shadow-sm dark:shadow-none">
                 {/* Drop zone */}
                 <div
                     onDrop={onDrop}
@@ -189,10 +189,10 @@ function UploadExcelPage() {
                     onClick={() => !file && inputRef.current?.click()}
                     className={`relative flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed transition-all py-12 px-6
                         ${file
-                            ? 'border-white/10 cursor-default'
+                            ? 'border-gray-200 dark:border-white/10 cursor-default'
                             : dragging
-                                ? 'border-indigo-500/70 bg-indigo-500/10 cursor-copy'
-                                : 'border-white/15 hover:border-indigo-500/50 hover:bg-white/3 cursor-pointer'
+                                ? 'border-indigo-500/70 bg-indigo-50 dark:bg-indigo-500/10 cursor-copy'
+                                : 'border-gray-200 dark:border-white/15 hover:border-indigo-400 dark:hover:border-indigo-500/50 hover:bg-gray-50 dark:hover:bg-white/3 cursor-pointer'
                         }`}
                 >
                     <input ref={inputRef} type="file" accept=".xlsx,.xls" className="hidden" onChange={onInputChange} />
@@ -200,34 +200,34 @@ function UploadExcelPage() {
                     {file ? (
                         <div className="flex items-center gap-4 w-full">
                             <div className="w-12 h-12 rounded-xl bg-emerald-500/15 flex items-center justify-center shrink-0">
-                                <UploadExcelIcon className="w-6 h-6 text-emerald-400" />
+                                <UploadExcelIcon className="w-6 h-6 text-emerald-500 dark:text-emerald-400" />
                             </div>
                             <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium truncate">{file.name}</p>
-                                <p className="text-xs text-white/30 mt-0.5">{formatSize(file.size)}</p>
+                                <p className="text-sm font-medium truncate text-gray-900 dark:text-white">{file.name}</p>
+                                <p className="text-xs text-gray-400 dark:text-white/30 mt-0.5">{formatSize(file.size)}</p>
                             </div>
                             <button
                                 type="button"
                                 onClick={(e) => { e.stopPropagation(); removeFile(); }}
-                                className="text-white/30 hover:text-red-400 transition-colors shrink-0"
+                                className="text-gray-300 dark:text-white/30 hover:text-red-400 transition-colors shrink-0"
                             >
                                 <XCircleIcon className="w-5 h-5" />
                             </button>
                         </div>
                     ) : (
                         <>
-                            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all ${dragging ? 'bg-indigo-500/20' : 'bg-white/5'}`}>
-                                <UploadCloudIcon className={`w-7 h-7 transition-colors ${dragging ? 'text-indigo-400' : 'text-white/30'}`} />
+                            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all ${dragging ? 'bg-indigo-100 dark:bg-indigo-500/20' : 'bg-gray-100 dark:bg-white/5'}`}>
+                                <UploadCloudIcon className={`w-7 h-7 transition-colors ${dragging ? 'text-indigo-500' : 'text-gray-400 dark:text-white/30'}`} />
                             </div>
                             <div className="text-center">
-                                <p className="text-sm font-medium text-white/70">
+                                <p className="text-sm font-medium text-gray-600 dark:text-white/70">
                                     {dragging ? 'Lepaskan file di sini' : 'Drag & drop file di sini'}
                                 </p>
-                                <p className="text-xs text-white/30 mt-1">
-                                    atau <span className="text-indigo-400 font-medium">klik untuk memilih file</span>
+                                <p className="text-xs text-gray-400 dark:text-white/30 mt-1">
+                                    atau <span className="text-indigo-600 dark:text-indigo-400 font-medium">klik untuk memilih file</span>
                                 </p>
                             </div>
-                            <p className="text-[11px] text-white/20">Mendukung .xlsx dan .xls • Maks. 10 MB</p>
+                            <p className="text-[11px] text-gray-400 dark:text-white/20">Mendukung .xlsx dan .xls • Maks. 10 MB</p>
                         </>
                     )}
                 </div>
